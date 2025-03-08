@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Basic -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!-- Site Metas -->
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+
+    <title>Centralized Emergency App</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+
+    <!-- Fonts style -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,600,700&display=swap"
+        rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    <link href="css/style.css" rel="stylesheet" />
+    <!-- Responsive style -->
+    <link href="css/responsive.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="chatbot2.css">
+
+    <style>
+        .button {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        #suggestions {
+            margin-top: 10px;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        #suggestions li {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        #suggestions li:hover {
+            background-color: #e0e0e0;
+        }
+
+        .outerbox {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: gainsboro;
+            overflow: hidden;
+            /* Ensure content stays within the box */
+        }
+
+        .outerbox::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('./images/emergserv.jpg');
+            background-size: cover;
+            filter: blur(4px);
+            /* Adjust blur level here */
+            z-index: 0;
+            /* Send it to the back */
+        }
+
+        .outerbox>* {
+            position: relative;
+            z-index: 1;
+        }
+
+
+        .innerBox {
+            background-image: url('image.png');
+            background-size: cover;
+            background-position: center;
+            border: 1px solid #ddd;
+            box-shadow: 0px 0px 40px 7px rgba(255, 13, 13, 1);
+        }
+    </style>
+</head>
+
+<body class="sub_page">
+    <div class="hero_area">
+        <!-- header section starts -->
+        <div class="hero_bg_box">
+            <div class="img-box">
+                <img src="./images/emergserv.jpg" alt="">
+            </div>
+        </div>
+
+        <header class="header_section">
+            <div class="header_bottom">
+                <div class="container-fluid">
+                    <nav class="navbar navbar-expand-lg custom_nav-container">
+                        <a class="navbar-brand" href="index.html">
+                            <span>
+                                Centralized Emergency App
+                            </span>
+                        </a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                            <span class=""></span>
+                        </button>
+
+                        <div class="navbar-collapse ml-auto" id="navbarSupportedContent">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="index.html">Home <span
+                                            class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#"> About</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#"> Services </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="chatbot.html"> Chatbot </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">Contact Us</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <!-- end header section -->
+    </div>
+
+    <!-- Chatbot section -->
+    <div class="input-container" style="margin-top: 80px;">
+        <input type="text" id="serviceFilter" placeholder="Search services..." oninput="filterServices()">
+    </div>
+
+    <div id="servicesContainer">
+        <div class="card">
+            <div class="head">Police</div>
+            <div class="content">
+                <br />
+                <button onclick="callService('police')" class="button">Call</button>
+                <button onclick="chatService('police')" class="button">Chat</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="head">Ambulance</div>
+            <div class="content">
+                <br />
+                <button onclick="callService('ambulance')" class="button">Call</button>
+                <button onclick="chatService('ambulance')" class="button">Chat</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="head">Fire Brigade</div>
+            <div class="content">
+                <br />
+                <button onclick="callService('fireBrigade')" class="button">Call</button>
+                <button onclick="chatService('fireBrigade')" class="button">Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterServices() {
+            const searchTerm = document.getElementById("serviceFilter").value.toLowerCase();
+            const servicesContainer = document.getElementById("servicesContainer");
+            const cards = servicesContainer.getElementsByClassName("card");
+
+            for (let i = 0; i < cards.length; i++) {
+                const serviceName = cards[i].getElementsByClassName("head")[0].textContent.toLowerCase();
+                if (serviceName.includes(searchTerm)) {
+                    cards[i].style.display = "";  // Show the card if it matches the search term
+                } else {
+                    cards[i].style.display = "none";  // Hide the card if it doesn't match the search term
+                }
+            }
+        }
+
+        // Function to calculate distance using the Haversine formula
+        function haversine(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the Earth in kilometers
+            const φ1 = lat1 * Math.PI / 180; // Convert latitude to radians
+            const φ2 = lat2 * Math.PI / 180; // Convert latitude to radians
+            const Δφ = (lat2 - lat1) * Math.PI / 180; // Difference in latitudes
+            const Δλ = (lon2 - lon1) * Math.PI / 180; // Difference in longitudes
+
+            const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c; // Distance in kilometers
+            return distance;
+        }
+
+        // Function to find the closest station based on coordinates
+        function findClosestCoordinate(coordinateMap, targetLat, targetLon) {
+            let closestDistance = Infinity;
+            let closestStation = null;
+
+            // Iterate through the map of coordinates
+            for (let [coordinates, { name, phoneNumber }] of Object.entries(coordinateMap)) {
+                const [lat, lon] = JSON.parse(coordinates); // Parse the coordinates
+                const distance = haversine(targetLat, targetLon, lat, lon);
+
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestStation = { name, phoneNumber };
+                }
+            }
+
+            return closestStation;
+        }
+
+        // Coordinate map for different services
+        const serviceCoordinateMap = {
+            police: {
+                "[19.187968956006973, 72.85034664268137]": { name: "Dindoshi Police Station", phoneNumber: "8108070876" },
+                "[19.155863496673824, 72.85798072804502]": { name: "Vanrai Police Station", phoneNumber: "918108070876" },
+                "[19.162942837677186, 72.87247741186582]": { name: "Aarey Police Station", phoneNumber: "918108070876" },
+                "[19.15775035618934, 72.84582666062305]": { name: "Goregaon Police Station", phoneNumber: "1234567890" },
+                "[19.659652837334107, 72.72212814453027]": { name: "Mahim Police Station", phoneNumber: "0987654321" }
+            },
+            ambulance: {
+                "[19.15775035618934, 72.84582666062305]": { name: "Goregaon Ambulance", phoneNumber: "2223334444" }
+            },
+            fireBrigade: {
+                "[19.187968956006973, 72.85034664268137]": { name: "Dindoshi Fire Brigade", phoneNumber: "3334445555" }
+            }
+        };
+
+        function callService(service) {
+            let coordinateMap = serviceCoordinateMap[service];
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    // Find the closest phone number
+                    const serviceObj = findClosestCoordinate(coordinateMap, latitude, longitude);
+
+                    let phoneNumber = serviceObj?.phoneNumber;
+
+                    if (phoneNumber) {
+                        window.location.href = `tel:${phoneNumber}`; // Opens dialer with number
+                    } else {
+                        alert('Contact not found');
+                    }
+
+                });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        function chatService(service) {
+            let coordinateMap = serviceCoordinateMap[service];
+
+            // Construct the WhatsApp link with a pre-filled message (URL encoded)
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    const serviceObj = findClosestCoordinate(coordinateMap, latitude, longitude);
+                    const phoneNumber = serviceObj?.phoneNumber;
+                    const message = `Latitude: ${latitude}, Longitude: ${longitude}`;
+                    const encodedMessage = encodeURIComponent(message);
+                    const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+                    // Check if the user is on mobile
+                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+                    // If on mobile, open WhatsApp app, else open the web version
+                    if (isMobile) {
+                        window.location.href = whatsappLink; // Opens in WhatsApp app on mobile
+                    } else {
+                        window.open(whatsappLink, '_blank'); // Opens in WhatsApp Web on desktop
+                    }
+                });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+    </script>
+    <!-- End Chatbot section -->
+
+    <!-- info section -->
+    <section class="info_section" style="margin-top: 200px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="info_logo">
+                        <a class="navbar-brand" href="index.html">
+                            <span>
+                                Centralized Emergency App
+                            </span>
+                        </a>
+                        <p>
+                            We provide a seamless connection to emergency services in your area through our chatbot,
+                            making it easy to
+                            reach the right responders quickly for urgent assistance
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="info_links">
+                        <h5 style="font-family: 'Poppins', sans-serif; font-weight: bold;">
+                            Useful Links
+                        </h5>
+                        <ul>
+                            <li>
+                                <a href="">
+                                    Chatbot Service
+                                </a>
+                            </li>
+                            <li>
+                                <a href="index.html">
+                                    About Us
+                                </a>
+                            </li>
+                            <li>
+                                <a href="index.html">
+                                    Services
+                                </a>
+                            </li>
+                            <li>
+                                <a href="index.html">
+                                    Contact Us
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info_info">
+                        <h5 style="font-family: 'Poppins', sans-serif; font-weight: bold;">
+                            Contact Us
+                        </h5>
+                    </div>
+                    <div class="info_contact">
+                        <a href="" class="">
+                            <i class="fa fa-map-marker" aria-hidden="true"></i>
+                            <span>
+                                XIE, Mahim Causeway, Mahim
+                            </span>
+                        </a>
+                        <a href="" class="">
+                            <i class="fa fa-phone" aria-hidden="true"></i>
+                            <span>
+                                Call : +91 9876543210
+                            </span>
+                        </a>
+                        <a href="" class="">
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                            <span>
+                                emergencyapp@gmail.com
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info_form ">
+                        <h5 style="font-family: 'Poppins', sans-serif; font-weight: bold;">
+                            Newsletter
+                        </h5>
+                        <form action="#">
+                            <input type="email" placeholder="Enter your email">
+                            <button>
+                                Subscribe
+                            </button>
+                        </form>
+                        <div class="social_box">
+                            <a href="">
+                                <i class="fa fa-facebook" aria-hidden="true"></i>
+                            </a>
+                            <a href="">
+                                <i class="fa fa-twitter" aria-hidden="true"></i>
+                            </a>
+                            <a href="">
+                                <i class="fa fa-youtube" aria-hidden="true"></i>
+                            </a>
+                            <a href="">
+                                <i class="fa fa-instagram" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- end info_section -->
+
+
+    <!-- footer section -->
+    <footer class="container-fluid footer_section">
+        <p>
+            &copy; <span id="currentYear"></span> All Rights Reserved. Centralized Emergency App
+            <!-- <a href="https://html.design/">Free Html Templates</a> Distribution by
+        <a href="https://themewagon.com">ThemeWagon</a> -->
+        </p>
+    </footer>
+    <!-- footer section -->
+
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/custom.js"></script>
+    <script>
+        async function getSuggestions() {
+            const userInput = document.getElementById('userInput').value;
+            if (userInput) {
+                try {
+                    const response = await fetch('http://localhost:3000/suggest', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ input: userInput })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        showSuggestions(data.suggestions);
+                    } else {
+                        console.error('Failed to fetch suggestions:', response.statusText);
+                        document.getElementById('suggestions').innerHTML = '';
+                    }
+                } catch (error) {
+                    console.error('Error parsing suggestions:', error);
+                    document.getElementById('suggestions').innerHTML = '';
+                }
+            } else {
+                document.getElementById('suggestions').innerHTML = '';
+            }
+        }
+
+        function showSuggestions(suggestions) {
+            const suggestionsList = document.getElementById('suggestions');
+            suggestionsList.innerHTML = '';
+            suggestions.forEach(suggestion => {
+                const li = document.createElement('li');
+                li.textContent = suggestion;
+                li.onclick = () => selectOption(suggestion);
+                suggestionsList.appendChild(li);
+            });
+        }
+
+        function getGeolocation() {
+            return new Promise((resolve, reject) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(resolve, reject);
+                } else {
+                    reject(new Error("Geolocation is not supported by this browser."));
+                }
+            });
+        }
+
+        async function selectOption(option) {
+            alert(option);
+            const position = await getGeolocation();
+            const { latitude, longitude } = position.coords;
+            const userLocation = `Latitude: ${latitude}, Longitude: ${longitude}`;
+            console.log("User location:", userLocation);
+
+            try {
+                await fetch('http://localhost:3000/select', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ option, userLocation })
+                });
+            } catch (error) {
+                console.error('Error sending selected option:', error);
+            }
+        }
+    </script>
+</body>
+
+</html>

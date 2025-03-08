@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Basic -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!-- Site Metas -->
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+
+  <title>Centralized Emergency App</title>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+
+  <!-- Fonts style -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,600,700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Custom styles for this template -->
+  <link href="css/style.css" rel="stylesheet" />
+  <!-- Responsive style -->
+  <link href="css/responsive.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .button {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    #suggestions {
+      margin-top: 10px;
+      padding: 0;
+      list-style-type: none;
+    }
+
+    #suggestions li {
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    #suggestions li:hover {
+      background-color: #e0e0e0;
+    }
+
+    .outerbox {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: gainsboro;
+      overflow: hidden;
+      /* Ensure content stays within the box */
+    }
+
+    .outerbox::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('./images/emergserv.jpg');
+      background-size: cover;
+      filter: blur(4px);
+      /* Adjust blur level here */
+      z-index: 0;
+      /* Send it to the back */
+    }
+
+    .outerbox>* {
+      position: relative;
+      z-index: 1;
+    }
+
+
+    .innerBox {
+      background-image: url('image.png');
+      background-size: cover;
+      background-position: center;
+      border: 1px solid #ddd;
+      box-shadow: 0px 0px 40px 7px rgba(255, 13, 13, 1);
+    }
+  </style>
+</head>
+
+<body class="sub_page">
+  <div class="hero_area">
+    <!-- header section starts -->
+    <div class="hero_bg_box">
+      <div class="img-box">
+        <img src="./images/emergserv.jpg" alt="">
+      </div>
+    </div>
+
+    <header class="header_section">
+      <div class="header_bottom">
+        <div class="container-fluid">
+          <nav class="navbar navbar-expand-lg custom_nav-container">
+            <a class="navbar-brand" href="index.html">
+              <span>
+                Centralized Emergency App
+              </span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class=""></span>
+            </button>
+
+            <div class="navbar-collapse ml-auto" id="navbarSupportedContent">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#"> About</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#"> Services </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="chatbot.html"> Chatbot </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Contact Us</a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+    <!-- end header section -->
+  </div>
+
+  <!-- Chatbot section -->
+  <div class="outerbox">
+    <div class="w-full max-w-xs p-5 bg-gray-100 rounded-lg font-mono innerBox">
+      <div class="">
+        <button
+          class="button text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+          type="button" onclick="selectOption('police')">
+          Police
+        </button>
+        <button
+          class="button text-white bg-gradient-to-r from-red-500 via-red-600 to-red-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+          type="button" onclick="selectOption('ambulance')">
+          Ambulance
+        </button>
+        <button
+          class="button text-white bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-400/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+          type="button" onclick="selectOption('fire')">
+          Fire
+        </button>
+        <button
+          class="button text-white bg-gradient-to-r from-pink-500 via-pink-600 to-pink-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+          type="button" onclick="selectOption('womenSafety')">
+          Women Safety
+        </button>
+        <button
+          class="button text-white bg-gradient-to-r from-pink-500 via-pink-600 to-pink-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+          type="button" onclick="selectOption('cyberSafety')">
+          Cyber Safety
+        </button>
+        <button
+          class="button text-white bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 shadow-lg shadow-blue-400/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+          type="button" onclick="selectOption('childSafety')">
+          Child Safety
+        </button>
+      </div>
+
+
+      <label class="block text-white text-center font-bold mb-2" for="userInput">Search</label>
+      <input
+        class="text-sm custom-input w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm transition duration-300 ease-in-out transform focus:-translate-y-1 focus:outline-blue-300 hover:shadow-lg hover:border-blue-300 bg-gray-100"
+        type="text" id="userInput" placeholder="Type something..." onkeyup="getSuggestions()" />
+      <ul id="suggestions"></ul>
+    </div>
+  </div>
+  <!-- End Chatbot section -->
+
+  <!-- info section -->
+  <section class="info_section ">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="info_logo">
+            <a class="navbar-brand" href="index.html">
+              <span>
+                Centralized Emergency App
+              </span>
+            </a>
+            <p>
+              We provide a seamless connection to emergency services in your area through our chatbot, making it easy to
+              reach the right responders quickly for urgent assistance
+            </p>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="info_links">
+            <h5 style="font-family: 'Poppins', sans-serif; font-weight: bold;">
+              Useful Links
+            </h5>
+            <ul>
+              <li>
+                <a href="">
+                  Chatbot Service
+                </a>
+              </li>
+              <li>
+                <a href="index.html">
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a href="index.html">
+                  Services
+                </a>
+              </li>
+              <li>
+                <a href="index.html">
+                  Contact Us
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="info_info">
+            <h5 style="font-family: 'Poppins', sans-serif; font-weight: bold;">
+              Contact Us
+            </h5>
+          </div>
+          <div class="info_contact">
+            <a href="" class="">
+              <i class="fa fa-map-marker" aria-hidden="true"></i>
+              <span>
+                XIE, Mahim Causeway, Mahim
+              </span>
+            </a>
+            <a href="" class="">
+              <i class="fa fa-phone" aria-hidden="true"></i>
+              <span>
+                Call : +91 9876543210
+              </span>
+            </a>
+            <a href="" class="">
+              <i class="fa fa-envelope" aria-hidden="true"></i>
+              <span>
+                emergencyapp@gmail.com
+              </span>
+            </a>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="info_form ">
+            <h5 style="font-family: 'Poppins', sans-serif; font-weight: bold;">
+              Newsletter
+            </h5>
+            <form action="#">
+              <input type="email" placeholder="Enter your email">
+              <button>
+                Subscribe
+              </button>
+            </form>
+            <div class="social_box">
+              <a href="">
+                <i class="fa fa-facebook" aria-hidden="true"></i>
+              </a>
+              <a href="">
+                <i class="fa fa-twitter" aria-hidden="true"></i>
+              </a>
+              <a href="">
+                <i class="fa fa-youtube" aria-hidden="true"></i>
+              </a>
+              <a href="">
+                <i class="fa fa-instagram" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- end info_section -->
+
+
+  <!-- footer section -->
+  <footer class="container-fluid footer_section">
+    <p>
+      &copy; <span id="currentYear"></span> All Rights Reserved. Centralized Emergency App
+      <!-- <a href="https://html.design/">Free Html Templates</a> Distribution by
+        <a href="https://themewagon.com">ThemeWagon</a> -->
+    </p>
+  </footer>
+  <!-- footer section -->
+
+  <script src="js/jquery-3.4.1.min.js"></script>
+  <script src="js/bootstrap.js"></script>
+  <script src="js/custom.js"></script>
+  <script>
+    async function getSuggestions() {
+      const userInput = document.getElementById('userInput').value;
+      if (userInput) {
+        try {
+          const response = await fetch('http://localhost:3000/suggest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ input: userInput })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            showSuggestions(data.suggestions);
+          } else {
+            console.error('Failed to fetch suggestions:', response.statusText);
+            document.getElementById('suggestions').innerHTML = '';
+          }
+        } catch (error) {
+          console.error('Error parsing suggestions:', error);
+          document.getElementById('suggestions').innerHTML = '';
+        }
+      } else {
+        document.getElementById('suggestions').innerHTML = '';
+      }
+    }
+
+    function showSuggestions(suggestions) {
+      const suggestionsList = document.getElementById('suggestions');
+      suggestionsList.innerHTML = '';
+      suggestions.forEach(suggestion => {
+        const li = document.createElement('li');
+        li.textContent = suggestion;
+        li.onclick = () => selectOption(suggestion);
+        suggestionsList.appendChild(li);
+      });
+    }
+
+    function getGeolocation() {
+      return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        } else {
+          reject(new Error("Geolocation is not supported by this browser."));
+        }
+      });
+    }
+
+    async function selectOption(option) {
+      alert(option);
+      const position = await getGeolocation();
+      const { latitude, longitude } = position.coords;
+      const userLocation = `Latitude: ${latitude}, Longitude: ${longitude}`;
+      console.log("User location:", userLocation);
+
+      try {
+        await fetch('http://localhost:3000/select', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ option, userLocation })
+        });
+      } catch (error) {
+        console.error('Error sending selected option:', error);
+      }
+    }
+  </script>
+</body>
+
+</html>

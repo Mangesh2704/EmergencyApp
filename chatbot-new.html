@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="chatbot-new.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@600&display=swap"
+        rel="stylesheet">
+    <title>Phone Dialer</title>
+</head>
+
+<body>
+    <h1 style="color: white;text-align: center;font-family:Roboto;">
+        Emergency
+    </h1>
+
+    <div class="input-container">
+        <input type="text" id="serviceFilter" placeholder="Search services..." oninput="filterServices()">
+    </div>
+
+    <div id="servicesContainer">
+        <div class="card">
+            <div class="head">Police</div>
+            <div class="content">
+                <br />
+                <button onclick="callService('police')" class="button">Call</button>
+                <button onclick="chatService('police')" class="button">Chat</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="head">Ambulance</div>
+            <div class="content">
+                <br />
+                <button onclick="callService('ambulance')" class="button">Call</button>
+                <button onclick="chatService('ambulance')" class="button">Chat</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="head">Fire Brigade</div>
+            <div class="content">
+                <br />
+                <button onclick="callService('fireBrigade')" class="button">Call</button>
+                <button onclick="chatService('fireBrigade')" class="button">Chat</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterServices() {
+            const searchTerm = document.getElementById("serviceFilter").value.toLowerCase();
+            const servicesContainer = document.getElementById("servicesContainer");
+            const cards = servicesContainer.getElementsByClassName("card");
+
+            for (let i = 0; i < cards.length; i++) {
+                const serviceName = cards[i].getElementsByClassName("head")[0].textContent.toLowerCase();
+                if (serviceName.includes(searchTerm)) {
+                    cards[i].style.display = "";  // Show the card if it matches the search term
+                } else {
+                    cards[i].style.display = "none";  // Hide the card if it doesn't match the search term
+                }
+            }
+        }
+
+        // Function to calculate distance using the Haversine formula
+        function haversine(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the Earth in kilometers
+            const φ1 = lat1 * Math.PI / 180; // Convert latitude to radians
+            const φ2 = lat2 * Math.PI / 180; // Convert latitude to radians
+            const Δφ = (lat2 - lat1) * Math.PI / 180; // Difference in latitudes
+            const Δλ = (lon2 - lon1) * Math.PI / 180; // Difference in longitudes
+
+            const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c; // Distance in kilometers
+            return distance;
+        }
+
+        // Function to find the closest station based on coordinates
+        function findClosestCoordinate(coordinateMap, targetLat, targetLon) {
+            let closestDistance = Infinity;
+            let closestStation = null;
+
+            // Iterate through the map of coordinates
+            for (let [coordinates, { name, phoneNumber }] of Object.entries(coordinateMap)) {
+                const [lat, lon] = JSON.parse(coordinates); // Parse the coordinates
+                const distance = haversine(targetLat, targetLon, lat, lon);
+
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestStation = { name, phoneNumber };
+                }
+            }
+
+            return closestStation;
+        }
+
+        // Coordinate map for different services
+        const serviceCoordinateMap = {
+            police: {
+                "[19.187968956006973, 72.85034664268137]": { name: "Dindoshi Police Station", phoneNumber: "8108070876" },
+                "[19.155863496673824, 72.85798072804502]": { name: "Vanrai Police Station", phoneNumber: "918108070876" },
+                "[19.162942837677186, 72.87247741186582]": { name: "Aarey Police Station", phoneNumber: "918108070876" },
+                "[19.15775035618934, 72.84582666062305]": { name: "Goregaon Police Station", phoneNumber: "1234567890" },
+                "[19.659652837334107, 72.72212814453027]": { name: "Mahim Police Station", phoneNumber: "0987654321" }
+            },
+            ambulance: {
+                "[19.15775035618934, 72.84582666062305]": { name: "Goregaon Ambulance", phoneNumber: "2223334444" }
+            },
+            fireBrigade: {
+                "[19.187968956006973, 72.85034664268137]": { name: "Dindoshi Fire Brigade", phoneNumber: "3334445555" }
+            }
+        };
+
+        function callService(service) {
+            let coordinateMap = serviceCoordinateMap[service];
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    // Find the closest phone number
+                    const serviceObj = findClosestCoordinate(coordinateMap, latitude, longitude);
+
+                    let phoneNumber = serviceObj?.phoneNumber;
+
+                    if (phoneNumber) {
+                        window.location.href = `tel:${phoneNumber}`; // Opens dialer with number
+                    } else {
+                        alert('Contact not found');
+                    }
+
+                });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        function chatService(service) {
+            let coordinateMap = serviceCoordinateMap[service];
+
+            // Construct the WhatsApp link with a pre-filled message (URL encoded)
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    const serviceObj = findClosestCoordinate(coordinateMap, latitude, longitude);
+                    const phoneNumber = serviceObj?.phoneNumber;
+                    const message = `Latitude: ${latitude}, Longitude: ${longitude}`;
+                    const encodedMessage = encodeURIComponent(message);
+                    const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+                    // Check if the user is on mobile
+                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+                    // If on mobile, open WhatsApp app, else open the web version
+                    if (isMobile) {
+                        window.location.href = whatsappLink; // Opens in WhatsApp app on mobile
+                    } else {
+                        window.open(whatsappLink, '_blank'); // Opens in WhatsApp Web on desktop
+                    }
+                });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+    </script>
+</body>
+
+</html>
