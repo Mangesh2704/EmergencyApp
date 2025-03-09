@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chatbot | Centralized Emergency App</title>
+  <!-- Google Font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    /* ---------- Global Reset & Body Styles ---------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Roboto', sans-serif;
+      background-color: black; /* Can be updated dynamically */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.5s ease;
+    }
+    /* ---------- Authentication Container ---------- */
+    #authSection {
+      width: 90%;
+      max-width: 400px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      padding: 20px;
+      margin: 20px;
+    }
+    .card-switch {
+      position: relative;
+    }
+    /* ---------- Toggle Switch Row ---------- */
+    .toggle-switch {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .toggle-switch span {
+      font-size: 18px;
+      font-weight: 500;
+      color: #333;
+    }
+    /* ---------- Hidden Checkbox Trigger ---------- */
+    .toggle {
+      display: none;
+    }
+    /* ---------- Switch Style (visual slider) ---------- */
+    .switch {
+      position: relative;
+      width: 50px;
+      height: 25px;
+    }
+    .switch .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #bdc3c7;
+      transition: 0.4s;
+      border-radius: 25px;
+    }
+    .switch .slider:before {
+      position: absolute;
+      content: "";
+      height: 21px;
+      width: 21px;
+      left: 2px;
+      bottom: 2px;
+      background-color: #fff;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+    /* ---------- Checkbox States ---------- */
+    .toggle:checked + .toggle-switch .switch .slider {
+      background-color: #2d8cf0;
+    }
+    .toggle:checked + .toggle-switch .switch .slider:before {
+      transform: translateX(25px);
+    }
+    /* ---------- Flip Card Container ---------- */
+    .flip-card__inner {
+      position: relative;
+      width: 100%;
+      height: 380px; /* Adjust as needed */
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      transition: transform 0.8s;
+    }
+    /* When .toggle is checked, rotate the .flip-card__inner */
+    .toggle:checked ~ .flip-card__inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card__front,
+    .flip-card__back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background: #ecf0f1;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .flip-card__front {
+      transform: rotateY(0deg);
+    }
+    .flip-card__back {
+      transform: rotateY(180deg);
+    }
+    /* ---------- Titles & Form Styles ---------- */
+    .title {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .flip-card__form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+    .flip-card__input {
+      padding: 10px;
+      border: 1px solid #bdc3c7;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    .flip-card__btn {
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255,196,0,0.97);
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .flip-card__btn:hover {
+      background: #16a085;
+    }
+    /* ---------- Chat Section Styles ---------- */
+    #chatSection {
+      /* Hidden by default; show it when user logs in via JS */
+      display: none;
+      max-width: 1200px;
+      width: 90%;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+    /* ---------- Users Sidebar ---------- */
+    .users {
+      flex: 1;
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      padding: 20px;
+      box-sizing: border-box;
+      min-width: 250px;
+    }
+    .users h3 {
+      margin-bottom: 20px;
+      font-size: 20px;
+      border-bottom: 1px solid #34495e;
+      padding-bottom: 10px;
+    }
+    #userList {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    #userList li {
+      padding: 12px;
+      margin-bottom: 10px;
+      background-color: #34495e;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    #userList li:hover {
+      background-color: #1abc9c;
+    }
+    /* ---------- Chat Box ---------- */
+    .chat {
+      flex: 3;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      background: #ecf0f1;
+      box-sizing: border-box;
+    }
+    #chatHeader {
+      font-size: 20px;
+      color: #2c3e50;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 10px;
+    }
+    #chatBox {
+      flex: 1;
+      overflow-y: auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    .message-box {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    #messageInput {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    .message-box button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      background: #1abc9c;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .message-box button:hover {
+      background: #16a085;
+    }
+    /* ---------- Chat Image ---------- */
+    .chat-image {
+      max-width: 200px;
+      border-radius: 8px;
+      margin: 5px 0;
+      display: block;
+    }
+    .imageInput {
+      display: inline-block;
+      background-color: #1abc9c;
+      color: white;
+      padding: 12px 18px;
+      font-size: 16px;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    /* ---------- Responsive Adjustments ---------- */
+    @media (max-width: 1024px) {
+      #authSection {
+        width: 90%;
+        margin: 20px auto;
+      }
+      #chatSection {
+        width: 95%;
+      }
+    }
+    @media (max-width: 768px) {
+      #chatSection {
+        flex-direction: column;
+        width: 100%;
+      }
+      .users, .chat {
+        width: 100%;
+      }
+      .users {
+        border-bottom: 2px solid #34495e;
+        text-align: center;
+      }
+      .chat {
+        margin-top: 20px;
+      }
+      .message-box {
+        flex-direction: column;
+      }
+      #messageInput, .message-box button {
+        width: 100%;
+      }
+    }
+    @media (max-width: 480px) {
+      .title {
+        font-size: 20px;
+      }
+      .toggle-switch span {
+        font-size: 16px;
+      }
+      .flip-card__btn, .message-box button {
+        font-size: 14px;
+      }
+      .flip-card__input, #messageInput {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Authentication Section -->
+  <div id="authSection">
+    <div class="card-switch">
+      <!-- Hidden toggle to flip the card -->
+      <input type="checkbox" class="toggle" id="authToggle">
+      <!-- Toggle Switch Row (visual part) -->
+      <div class="toggle-switch">
+        <span>Register</span>
+        <label class="switch" for="authToggle">
+          <span class="slider"></span>
+        </label>
+        <span>Sign In</span>
+      </div>
+      <!-- The flipping card container -->
+      <div class="flip-card__inner">
+        <!-- Front: Register -->
+        <div class="flip-card__front">
+          <h2 class="title">Register</h2>
+          <div class="flip-card__form">
+            <input class="flip-card__input" id="regEmail" type="email" placeholder="Email" required>
+            <input class="flip-card__input" id="regUsername" type="text" placeholder="Username" required>
+            <input class="flip-card__input" id="regPassword" type="password" placeholder="Password" required>
+            <input class="flip-card__input" id="regPhone" type="tel" placeholder="Phone" required>
+            <button onclick="register()" class="flip-card__btn">Let's go!</button>
+          </div>
+        </div>
+        <!-- Back: Sign In -->
+        <div class="flip-card__back">
+          <h2 class="title">Sign In</h2>
+          <div class="flip-card__form">
+            <input class="flip-card__input" id="loginUsername" type="text" placeholder="Enter Username" required>
+            <input class="flip-card__input" id="loginPassword" type="password" placeholder="Password" required>
+            <button onclick="login()" class="flip-card__btn">Confirm!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Chat Section (initially hidden; show after login via JavaScript) -->
+  <div id="chatSection">
+    <div class="users" id="leftUser">
+      <h3>Users</h3>
+      <ul id="userList"></ul>
+    </div>
+    <div class="chat" id="rightChat">
+      <h3 id="chatHeader">Select a user to chat</h3>
+      <div id="chatBox"></div>
+      <div class="message-box">
+        <input type="text" id="messageInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+      <br>
+      <div class="message-box">
+        <button onclick="sendLocation()">📍 Send Location</button>
+        <button onclick="makeACall()">Call</button>
+        <label for="imageInput" class="imageInput">Upload Image</label>
+        <input type="file" id="imageInput" accept="image/*" style="display: none;">
+        <button onclick="sendImage()">Send Image</button>
+      </div>
+    </div>
+  </div>
+  <!-- Your main script -->
+  <script src="script.js"></script>
+</body>
+</html>
