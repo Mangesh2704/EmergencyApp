@@ -978,7 +978,7 @@
       processMessage(query);
     }
 
-    const openAIProxy = "https://cors-anywhere.herokuapp.com/https://api.openai.com/v1/chat/completions";
+    const openAIProxy = "https://api.allorigins.win/raw?url=https://api.openai.com/v1/chat/completions";
 
     async function processMessage(query) {
       try {
@@ -986,7 +986,7 @@
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer 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`
+            "Authorization": `Bearer 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`
           },
           body: JSON.stringify({
             model: "gpt-4o-mini",
