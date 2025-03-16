@@ -938,6 +938,10 @@
       'Cyber Crime': '155620'
     };
 
+    const express = require("express");
+    const cors = require("cors");
+    const fetch = require("node-fetch");
+
     function toggleChat() {
       const chatbotSection = document.getElementById('chatbotSection');
       chatbotSection.style.display = chatbotSection.style.display === 'block' ? 'none' : 'block';
