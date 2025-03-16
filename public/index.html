@@ -378,7 +378,7 @@
             <button  id="sendOtpButton" class="flip-card__btn1" onclick="sendOTP()">Send OTP</button>
 
             <input class="flip-card__input" type="text" id="otp" placeholder="Enter OTP" />
-            <button style="padding: 1px;" class="flip-card__btn1" onclick="verifyOTP()">Verify OTP</button>
+            <button id="verifyOtpButton" class="flip-card__btn" onclick="verifyOTP()">Verify OTP</button>
             <button style="display: none;" onclick="register()" class="flip-card__btn" id="reg">Let's go!</button>
           </div>
         </div>
@@ -476,11 +476,16 @@
       });
       const data = await response.json();
       alert(data.message);
-      console.log(data.message)
-      if(data.message=="OTP verified successfully!"){
-        document.getElementById('reg').style.display='block';
+
+      if (data.message == "OTP verified successfully!") {
+        // Hide the 'Verify OTP' button
+        document.getElementById('verifyOtpButton').style.display = 'none';
+        
+        // Show the 'Let's go!' button
+        document.getElementById('reg').style.display = 'block';
       }
     }
+
   </script>
 </body>
 </html>
