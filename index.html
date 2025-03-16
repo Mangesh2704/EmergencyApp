@@ -978,13 +978,15 @@
       processMessage(query);
     }
 
+    const openAIProxy = "https://cors-anywhere.herokuapp.com/https://api.openai.com/v1/chat/completions";
+
     async function processMessage(query) {
       try {
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        const response = await fetch(openAIProxy, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer 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`
+            "Authorization": `Bearer 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`
           },
           body: JSON.stringify({
             model: "gpt-4o-mini",
@@ -992,12 +994,11 @@
             temperature: 0.7
           })
         });
-
+    
         const data = await response.json();
         addChatMessage(data.choices[0].message.content.trim());
       } catch (error) {
-        console.error("Error:", error);
-        addChatMessage("I'm currently unavailable. Please try again later.");
+        addChatMessage("Error fetching response. Please try again.");
       }
     }
   </script>
