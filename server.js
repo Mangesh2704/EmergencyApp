@@ -229,7 +229,7 @@ io.on("connection", (socket) => {
 // Start the server
 
 const accountSid = 'AC5344aa1a3385fcd9e3de5a9ad4fbae17';
-const authToken = '3011394c5a3f77190626281944197f2d';
+const authToken = '8df1e5dfe70e35e16c27aaf2d32ad38c';
 const client = twilio(accountSid, authToken);
 
 // Store OTP temporarily
