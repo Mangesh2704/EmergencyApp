@@ -35,21 +35,29 @@ const sendVerificationEmail = async (email) => {
         to: email,
         subject: "Email Verification",
         html: `<div style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px; text-align: center;">
-                        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                            <h1 style="color: #4CAF50;">Verify Your Email Address</h1>
-                            <p style="font-size: 16px;">Hi there,</p>
-                            <p style="font-size: 16px;">Thank you for signing up with us! Please verify your email address by clicking the button below:</p>
-                            <a href="${verificationLink}" style="background-color: #4CAF50; color: #fff; text-decoration: none; padding: 15px 25px; border-radius: 5px; font-size: 16px; font-weight: bold; display: inline-block; margin-top: 20px;">Verify Email</a>
-                            <p style="font-size: 14px; color: #777;">If you did not request this, please ignore this email.</p>
-                            <p style="font-size: 14px; color: #777;">This link will expire in 24 hours.</p>
-                        </div>
-                        <footer style="margin-top: 30px; font-size: 12px; color: #999;">
-                            <p>Powered by Centralized Emergency App</p>
-                            <p><a href="${process.env.BASE_URL}" style="color: #4CAF50;">Visit our website</a></p>
-                        </footer>
-                    </div>`,
+                <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <h1 style="color: #4CAF50;">Verify Your Email Address</h1>
+                    <p style="font-size: 16px;">Hi there,</p>
+                    <p style="font-size: 16px;">Thank you for signing up with us! Please verify your email address by clicking the button below:</p>
+                    <a href="${verificationLink}" style="background-color: #4CAF50; color: #fff; text-decoration: none; padding: 15px 25px; border-radius: 5px; font-size: 16px; font-weight: bold; display: inline-block; margin-top: 20px;">Verify Email</a>
+                    <p style="font-size: 14px; color: #777;">If you did not request this, please ignore this email.</p>
+                    <p style="font-size: 14px; color: #777;">This link will expire in 24 hours.</p>
+                </div>
+                <footer style="margin-top: 30px; font-size: 12px; color: #999;">
+                    <p>Powered by Centralized Emergency App</p>
+                    <p><a href="${process.env.BASE_URL}" style="color: #4CAF50;">Visit our website</a></p>
+                </footer>
+            </div>`,
     };
 
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log("Verification Email Sent");
+        return token;
+    } catch (error) {
+        console.error("Error sending email:", error);
+    }
+};
     try {
         await transporter.sendMail(mailOptions);
         console.log("Verification Email Sent");
@@ -165,13 +173,63 @@ app.post("/login", async (req, res) => {
 // Email verification route
 app.get("/verify-email", async (req, res) => {
     const { token } = req.query;
-    console.log("token", token);
-    const user = await User.findOne({ verificationToken: token });
-    if (!user) return res.status(400).json({ message: "Invalid or expired token" });
-    user.isVerified = true;
-    user.verificationToken = null;
-    await user.save();
-    res.send("Email verified successfully!");
+
+    // Log token for debugging (can be removed later)
+    console.log("Received token:", token);
+
+    try {
+        // Check if a user with the provided token exists
+        const user = await User.findOne({ verificationToken: token });
+
+        // Check if the user is not found or the token is invalid
+        if (!user) {
+            console.error("No user found for the provided token:", token);
+            return res.status(400).send(`
+                <html>
+                    <body style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4;">
+                        <div style="background-color: #ffffff; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <h2 style="color: #ff6f61;">Invalid or Expired Token</h2>
+                            <p style="font-size: 16px; color: #333;">The link you clicked is invalid or has expired. Please try requesting a new verification email.</p>
+                            <a href="/resend-verification" style="background-color: #4CAF50; color: #fff; text-decoration: none; padding: 15px 25px; border-radius: 5px; font-size: 16px; font-weight: bold; display: inline-block; margin-top: 20px;">Resend Verification Email</a>
+                        </div>
+                    </body>
+                </html>
+            `);
+        }
+
+        // Update the user to show that they have verified their email
+        user.isVerified = true;
+        user.verificationToken = null;
+        await user.save();
+
+        // Success response
+        res.send(`
+            <html>
+                <body style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4;">
+                    <div style="background-color: #ffffff; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                        <h2 style="color: #4CAF50;">Email Verified Successfully!</h2>
+                        <p style="font-size: 16px; color: #333;">Thank you for verifying your email. You can now sign in to your account.</p>
+                        <a href="https://emergencyapp.onrender.com/" style="background-color: #4CAF50; color: #fff; text-decoration: none; padding: 15px 25px; border-radius: 5px; font-size: 16px; font-weight: bold; display: inline-block; margin-top: 20px;">Go to Login</a>
+                    </div>
+                </body>
+            </html>
+        `);
+    } catch (error) {
+        // Log the error for debugging
+        console.error("Error during email verification:", error);
+        
+        // Send a generic error message to the user
+        res.status(500).send(`
+            <html>
+                <body style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4;">
+                    <div style="background-color: #ffffff; padding: 30px; border-radius: 8px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                        <h2 style="color: #ff6f61;">An error occurred</h2>
+                        <p style="font-size: 16px; color: #333;">There was an error while verifying your email. Please try again later or contact support.</p>
+                    </div>
+                </body>
+            </html>
+        `);
+    }
 });
 
 // Fetch all users
