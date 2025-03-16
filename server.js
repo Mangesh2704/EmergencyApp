@@ -7,6 +7,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Root Route for Testing
+app.get("/", (req, res) => {
+  res.send("Server is running on Render!");
+});
+
 app.post("/chat", async (req, res) => {
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -26,4 +31,6 @@ app.post("/chat", async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+// Use Render's Dynamic Port
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
