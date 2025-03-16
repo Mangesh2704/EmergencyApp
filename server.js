@@ -58,14 +58,6 @@ const sendVerificationEmail = async (email) => {
         console.error("Error sending email:", error);
     }
 };
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log("Verification Email Sent");
-        return token;
-    } catch (error) {
-        console.error("Error sending email:", error);
-    }
-};
 
 const app = express();
 const server = http.createServer(app);
