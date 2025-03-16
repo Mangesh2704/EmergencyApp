@@ -95,7 +95,7 @@
     .flip-card__inner {
       position: relative;
       width: 100%;
-      height: 380px; /* Adjust as needed */
+      height: 480px; /* Adjust as needed */
       perspective: 1000px;
       transform-style: preserve-3d;
       transition: transform 0.8s;
@@ -201,6 +201,16 @@
     #userList li:hover {
       background-color: #1abc9c;
     }
+    input.invalid {
+            border-color: red;
+        }
+        input.valid {
+            border-color: green;
+        }
+        button:disabled {
+            background-color: gray;
+        }
+
     /* ---------- Chat Box ---------- */
     .chat {
       flex: 3;
@@ -317,6 +327,27 @@
         font-size: 14px;
       }
     }
+    /* Style the buttons to look like links */
+    .flip-card__btn1 {
+      background: none;
+      border: none;
+      color: black;
+      font-size: 14px;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.3s ease;
+      margin-left: auto;
+    }
+
+    .flip-card__btn1:hover {
+      color: #16a085;
+    }
+
+    .flip-card__btn1:focus {
+      outline: none;
+    }
+
   </style>
 </head>
 <body>
@@ -342,8 +373,13 @@
             <input class="flip-card__input" id="regEmail" type="email" placeholder="Email" required>
             <input class="flip-card__input" id="regUsername" type="text" placeholder="Username" required>
             <input class="flip-card__input" id="regPassword" type="password" placeholder="Password" required>
-            <input class="flip-card__input" id="regPhone" type="tel" placeholder="Phone" required>
-            <button onclick="register()" class="flip-card__btn">Let's go!</button>
+            <!-- <input class="" id="regPhone" type="tel" placeholder="Phone" required> -->
+            <input class="flip-card__input" type="text" id="mobileNumber"  placeholder="+91__________" maxlength="13" />
+            <button  id="sendOtpButton" class="flip-card__btn1" onclick="sendOTP()">Send OTP</button>
+
+            <input class="flip-card__input" type="text" id="otp" placeholder="Enter OTP" />
+            <button style="padding: 1px;" class="flip-card__btn1" onclick="verifyOTP()">Verify OTP</button>
+            <button style="display: none;" onclick="register()" class="flip-card__btn" id="reg">Let's go!</button>
           </div>
         </div>
         <!-- Back: Sign In -->
@@ -375,13 +411,76 @@
       <div class="message-box">
         <button onclick="sendLocation()">📍 Send Location</button>
         <button onclick="makeACall()">Call</button>
-        <label for="imageInput" class="imageInput">Upload Image</label>
-        <input type="file" id="imageInput" accept="image/*" style="display: none;">
-        <button onclick="sendImage()">Send Image</button>
+        <label for="imageInput" class="imageInput">Upload or Take Image</label>
+        <input type="file" id="imageInput" accept="image/*" style="display:none;" />
+        <video id="cameraPreview" width="320" height="240" autoplay style="display:none;"></video>
+        <canvas id="cameraCanvas" style="display:none;"></canvas>
+        <button id="sendCameraImageButton" style="display:none;">Send Camera Image</button>
+        <button onclick="logout()">Logout</button>
       </div>
     </div>
   </div>
   <!-- Your main script -->
   <script src="script.js"></script>
+  <!-- <script>
+    const phoneInput = document.getElementById('mobileNumber');
+    const sendOtpButton = document.getElementById('sendOtpButton');
+    sendOtpButton.addEventListener('click', () => {
+            const phoneValue = phoneInput.value;
+            const phonePattern = /^\+91\d{10}$/; // Pattern to match +91 and 10 digits
+
+            if (phonePattern.test(phoneValue)) {
+                //alert('OTP sent successfully!');
+                // Here, you can add logic to actually send the OTP to the phone number
+                // Example: Call a function that sends OTP to the phone number
+            } else {
+                alert('Invalid phone number. Please enter a valid number with +91 followed by 10 digits.');
+            }
+        });
+    // Validate phone number on input event
+    phoneInput.addEventListener('input', () => {
+        const phoneValue = phoneInput.value;
+        const phonePattern = /^\+91\d{10}$/; // Pattern to match +91 and 10 digits
+
+        if (phonePattern.test(phoneValue)) {
+            phoneInput.classList.remove('invalid');
+            phoneInput.classList.add('valid');
+        } else {
+            phoneInput.classList.remove('valid');
+            phoneInput.classList.add('invalid');
+        }
+    });
+</script> -->
+   <script>
+    async function sendOTP() {
+      const mobileNumber = document.getElementById('mobileNumber').value;
+      console.log(mobileNumber)
+      const response = await fetch('/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobileNumber })
+      });
+      console.log(1)
+      const data = await response.json();
+      console.log(data)
+      alert(data.message);
+    }
+
+    async function verifyOTP() {
+      const mobileNumber = document.getElementById('mobileNumber').value;
+      const otp = document.getElementById('otp').value;
+      const response = await fetch('/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobileNumber, otp })
+      });
+      const data = await response.json();
+      alert(data.message);
+      console.log(data.message)
+      if(data.message=="OTP verified successfully!"){
+        document.getElementById('reg').style.display='block';
+      }
+    }
+  </script>
 </body>
 </html>
