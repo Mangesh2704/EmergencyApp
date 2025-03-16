@@ -988,15 +988,6 @@
             temperature: 0.7
           })
         });
-    
-        const data = await response.json();
-        addChatMessage(data.choices[0].message.content.trim());
-      } catch (error) {
-        console.error("Error:", error);
-        addChatMessage("❌ API is currently unavailable. Try again later.");
-      }
-    }
-
 
         const data = await response.json();
         addChatMessage(data.choices[0].message.content.trim());
