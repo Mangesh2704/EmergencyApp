@@ -34,8 +34,20 @@ const sendVerificationEmail = async (email) => {
         from: process.env.SMTP_USER,
         to: email,
         subject: "Email Verification",
-        html: `<p>Click the link below to verify your email:</p>
-               <a href="${verificationLink}">Verify Email</a>`,
+        html: `<div style="font-family: Arial, sans-serif; color: #333; background-color: #f4f4f4; padding: 20px; text-align: center;">
+                        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <h1 style="color: #4CAF50;">Verify Your Email Address</h1>
+                            <p style="font-size: 16px;">Hi there,</p>
+                            <p style="font-size: 16px;">Thank you for signing up with us! Please verify your email address by clicking the button below:</p>
+                            <a href="${verificationLink}" style="background-color: #4CAF50; color: #fff; text-decoration: none; padding: 15px 25px; border-radius: 5px; font-size: 16px; font-weight: bold; display: inline-block; margin-top: 20px;">Verify Email</a>
+                            <p style="font-size: 14px; color: #777;">If you did not request this, please ignore this email.</p>
+                            <p style="font-size: 14px; color: #777;">This link will expire in 24 hours.</p>
+                        </div>
+                        <footer style="margin-top: 30px; font-size: 12px; color: #999;">
+                            <p>Powered by Centralized Emergency App</p>
+                            <p><a href="${process.env.BASE_URL}" style="color: #4CAF50;">Visit our website</a></p>
+                        </footer>
+                    </div>`,
     };
 
     try {
