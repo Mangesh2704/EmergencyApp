@@ -13,7 +13,7 @@ app.post("/chat", async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer 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`
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify(req.body)
     });
