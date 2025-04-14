@@ -413,24 +413,69 @@ function handleImageUpload(event) {
         alert("No image selected!");
         return;
     }
+////////////////////////////
 
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        const imageData = e.target.result;
 
-        // Send the uploaded image through socket
-        if (!selectedUser) {
-            alert("Select a user to send the image!");
-            return;
-        }
+let formData = new FormData();
+formData.append("image", file);
+formData.append("sender", currentUser);
+formData.append("receiver", selectedUser);
 
+fetch("/upload-image", {
+    method: "POST",
+    body: formData
+})
+.then(response => response.json())
+.then(data => {
+    if (data.success) {
+        let chatBox = document.getElementById("chatBox");
+
+        // Append the sent image to the chat UI
+        let imgElement = document.createElement("img");
+        imgElement.src = data.imageUrl;
+        imgElement.classList.add("chat-image");
+        // chatBox.appendChild(imgElement);
+
+        // Emit the image message via Socket.IO
         socket.emit("send-message", {
             sender: currentUser,
             receiver: selectedUser,
-            image: imageData // Sending the base64 image string
+            image: data.imageUrl
         });
-    };
-    reader.readAsDataURL(file); // Convert the image to base64 string
+
+        // Scroll to bottom after sending the image
+        chatBox.scrollTop = chatBox.scrollHeight;
+    } else {
+        alert("Image upload failed!");
+    }
+})
+.catch(error => console.error("Error:", error));
+
+// Clear file input
+
+/////////////////////////////
+
+
+
+
+
+    // const reader = new FileReader();
+    // reader.onload = function (e) {
+    //     const imageData = e.target.result;
+
+    //     // Send the uploaded image through socket
+    //     if (!selectedUser) {
+    //         alert("Select a user to send the image!");
+    //         return;
+    //     }
+
+    //     socket.emit("send-message", {
+    //         sender: currentUser,
+    //         receiver: selectedUser,
+    //         image: imageData // Sending the base64 image string
+    //     });
+    // };
+    // reader.readAsDataURL(file); // Convert the image to base64 string
 }
 
 
@@ -472,14 +517,3 @@ function sendLocation() {
         alert("Geolocation is not supported by this browser.");
     }
 }
-
-
-
-
-
-
-
-
-
-
-
